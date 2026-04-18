@@ -1,0 +1,475 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Pitch — Cricket Team Manager</title>
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <!-- ═══════════════════════════════════════════════════
+     AUTH SCREEN
+════════════════════════════════════════════════════ -->
+    <div id="screen-auth" class="screen">
+      <div class="auth-card">
+        <div class="auth-logo">
+          <div class="auth-logo-text">🏏 PITCH</div>
+          <div class="auth-logo-sub">Cricket Team Manager</div>
+        </div>
+
+        <!-- Tab switcher -->
+        <div class="auth-tabs">
+          <button class="auth-tab active" data-tab="login">Login</button>
+          <button class="auth-tab" data-tab="register">Sign Up</button>
+        </div>
+
+        <!-- Login panel -->
+        <div class="auth-panel active" data-panel="login">
+          <div class="auth-error" id="err-login"></div>
+
+          <div class="field">
+            <label>Username or Email</label>
+            <input
+              type="text"
+              id="login-id"
+              placeholder="admin or admin@example.com"
+              autocomplete="username"
+            />
+          </div>
+
+          <div class="field">
+            <label>Password</label>
+            <div class="pw-wrap">
+              <input
+                type="password"
+                id="login-pw"
+                placeholder="••••••••"
+                autocomplete="current-password"
+              />
+              <button class="pw-eye" onclick="togglePw('login-pw', this)">
+                Show
+              </button>
+            </div>
+          </div>
+
+          <div class="auth-extras">
+            <label>
+              <input type="checkbox" id="login-remember" />
+              Remember me
+            </label>
+            <span
+              class="forgot-link"
+              onclick="toast('Password reset coming soon!', 'warn')"
+              >Forgot password?</span
+            >
+          </div>
+
+          <button
+            class="btn btn-primary btn-full"
+            id="btn-login"
+            onclick="doLogin()"
+          >
+            LOGIN
+          </button>
+        </div>
+
+        <!-- Register panel -->
+        <div class="auth-panel" data-panel="register">
+          <div class="auth-error" id="err-register"></div>
+          <div class="auth-success" id="suc-register"></div>
+
+          <div class="field">
+            <label>Username</label>
+            <input
+              type="text"
+              id="reg-username"
+              placeholder="e.g. johndoe"
+              autocomplete="username"
+            />
+          </div>
+
+          <div class="field">
+            <label>Email</label>
+            <input
+              type="email"
+              id="reg-email"
+              placeholder="you@example.com"
+              autocomplete="email"
+            />
+          </div>
+
+          <div class="field">
+            <label>Password</label>
+            <div class="pw-wrap">
+              <input
+                type="password"
+                id="reg-pw"
+                placeholder="Min 6 characters"
+                autocomplete="new-password"
+              />
+              <button class="pw-eye" onclick="togglePw('reg-pw', this)">
+                Show
+              </button>
+            </div>
+          </div>
+
+          <div class="field">
+            <label>Confirm Password</label>
+            <div class="pw-wrap">
+              <input
+                type="password"
+                id="reg-pw2"
+                placeholder="Repeat password"
+                autocomplete="new-password"
+              />
+              <button class="pw-eye" onclick="togglePw('reg-pw2', this)">
+                Show
+              </button>
+            </div>
+          </div>
+
+          <button
+            class="btn btn-primary btn-full"
+            id="btn-register"
+            onclick="doRegister()"
+          >
+            CREATE ACCOUNT
+          </button>
+        </div>
+      </div>
+      <!-- /.auth-card -->
+    </div>
+    <!-- /#screen-auth -->
+
+    <!-- ═══════════════════════════════════════════════════
+     APP SCREEN
+════════════════════════════════════════════════════ -->
+    <div id="screen-app" class="screen">
+      <!-- ── Sidebar ── -->
+      <aside class="sidebar">
+        <div class="sidebar-brand">
+          <div class="sidebar-brand-name">🏏 PITCH</div>
+          <div class="sidebar-brand-sub">Team Manager</div>
+        </div>
+
+        <nav class="nav-group">
+          <div class="nav-group-label">Main</div>
+
+          <div
+            class="nav-item"
+            id="nav-dashboard"
+            onclick="navigate('page-dashboard','nav-dashboard'); loadDashboard();"
+          >
+            <span class="nav-icon">📊</span><span>Dashboard</span>
+          </div>
+
+          <div
+            class="nav-item"
+            id="nav-players"
+            onclick="navigate('page-players','nav-players'); loadPlayers();"
+          >
+            <span class="nav-icon">🧑</span><span>Players</span>
+          </div>
+
+          <div
+            class="nav-item"
+            id="nav-teams"
+            onclick="navigate('page-teams','nav-teams');"
+          >
+            <span class="nav-icon">🏆</span><span>Teams</span>
+          </div>
+        </nav>
+
+        <div class="sidebar-bottom">
+          <div class="user-block">
+            <div class="user-avatar">A</div>
+            <div>
+              <div class="user-name">Admin</div>
+              <div class="user-role">Manager</div>
+            </div>
+          </div>
+          <button class="btn btn-ghost btn-full" onclick="doLogout()">
+            ← Logout
+          </button>
+        </div>
+      </aside>
+      <!-- /.sidebar -->
+
+      <!-- ── Main content ── -->
+      <main class="main">
+        <!-- ─── DASHBOARD ─── -->
+        <div class="page" id="page-dashboard">
+          <div class="page-header">
+            <div class="page-title-block">
+              <div class="page-title">Dashboard</div>
+              <div class="page-sub">Your squad at a glance</div>
+            </div>
+          </div>
+
+          <div class="stats-grid">
+            <div class="stat-card c-green">
+              <div class="stat-label">Total Players</div>
+              <div class="stat-val" id="stat-players">—</div>
+              <div class="stat-hint">In your roster</div>
+            </div>
+            <div class="stat-card c-teal">
+              <div class="stat-label">Active Teams</div>
+              <div class="stat-val" id="stat-teams">—</div>
+              <div class="stat-hint">Generated teams</div>
+            </div>
+            <div class="stat-card c-warn">
+              <div class="stat-label">Avg Rating</div>
+              <div class="stat-val" id="stat-avg">—</div>
+              <div class="stat-hint">Per-player average</div>
+            </div>
+          </div>
+
+          <div class="table-wrap">
+            <table>
+              <thead>
+                <tr>
+                  <th>Code</th>
+                  <th>Name</th>
+                  <th>Age</th>
+                  <th>Batting</th>
+                  <th>Bowling</th>
+                  <th>Fielding</th>
+                  <th>WK</th>
+                </tr>
+              </thead>
+              <tbody id="dash-tbody">
+                <tr>
+                  <td colspan="7" class="cell-center">
+                    <div class="spinner-wrap"><div class="spinner"></div></div>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+        <!-- /#page-dashboard -->
+
+        <!-- ─── PLAYERS ─── -->
+        <div class="page" id="page-players">
+          <div class="page-header">
+            <div class="page-title-block">
+              <div class="page-title">Players</div>
+              <div class="page-sub">Manage your cricket roster</div>
+            </div>
+            <button class="btn btn-primary" onclick="openAddPlayer()">
+              + Add Player
+            </button>
+          </div>
+
+          <div class="toolbar">
+            <input
+              class="search-input"
+              type="text"
+              id="player-search"
+              placeholder="Search by name or code…"
+              oninput="filterPlayers()"
+            />
+          </div>
+
+          <div class="table-wrap">
+            <table>
+              <thead>
+                <tr>
+                  <th>Code</th>
+                  <th
+                    class="th-sort"
+                    id="th-name"
+                    onclick="sortPlayers('name')"
+                  >
+                    Name
+                  </th>
+                  <th class="th-sort" id="th-age" onclick="sortPlayers('age')">
+                    Age
+                  </th>
+                  <th
+                    class="th-sort"
+                    id="th-batting_rating"
+                    onclick="sortPlayers('batting_rating')"
+                  >
+                    Batting
+                  </th>
+                  <th
+                    class="th-sort"
+                    id="th-bowling_rating"
+                    onclick="sortPlayers('bowling_rating')"
+                  >
+                    Bowling
+                  </th>
+                  <th>Fielding</th>
+                  <th>WK</th>
+                  <th>Score</th>
+                  <th>Actions</th>
+                </tr>
+              </thead>
+              <tbody id="players-tbody">
+                <tr>
+                  <td colspan="9" class="cell-center">
+                    <div class="spinner-wrap"><div class="spinner"></div></div>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+        <!-- /#page-players -->
+
+        <!-- ─── TEAMS ─── -->
+        <div class="page" id="page-teams">
+          <div class="page-header">
+            <div class="page-title-block">
+              <div class="page-title">Teams</div>
+              <div class="page-sub">Auto-balanced team generation</div>
+            </div>
+          </div>
+
+          <div class="team-controls">
+            <div class="field">
+              <label>Number of Teams</label>
+              <input type="number" id="team-count" min="2" max="20" value="2" />
+            </div>
+            <button
+              class="btn btn-primary"
+              id="btn-gen-teams"
+              onclick="generateTeams()"
+            >
+              ⚡ Generate Teams
+            </button>
+            <button class="btn btn-teal" onclick="loadSavedTeams()">
+              ↻ Load Saved
+            </button>
+            <button class="btn btn-danger" onclick="deleteAllTeams()">
+              🗑 Delete All
+            </button>
+          </div>
+
+          <div id="teams-container">
+            <div class="empty-state">
+              <div class="empty-icon">🏆</div>
+              <div class="empty-text">Generate or load teams above</div>
+            </div>
+          </div>
+        </div>
+        <!-- /#page-teams -->
+      </main>
+      <!-- /.main -->
+    </div>
+    <!-- /#screen-app -->
+
+    <!-- ═══════════════════════════════════════════════════
+     PLAYER MODAL
+════════════════════════════════════════════════════ -->
+    <div class="overlay" id="overlay-player">
+      <div class="modal">
+        <div class="modal-head">
+          <div class="modal-title" id="modal-player-title">Add Player</div>
+          <button class="modal-close" onclick="closePlayerModal()">✕</button>
+        </div>
+        <div class="modal-body">
+          <input type="hidden" id="edit-code" />
+
+          <div class="form-grid">
+            <div class="field span-2">
+              <label>Full Name</label>
+              <input type="text" id="f-name" placeholder="e.g. Virat Kohli" />
+            </div>
+
+            <div class="field">
+              <label>Age</label>
+              <input
+                type="number"
+                id="f-age"
+                min="14"
+                max="60"
+                placeholder="24"
+              />
+            </div>
+
+            <div class="field"><!-- spacer --></div>
+
+            <!-- Rating sliders -->
+            <div class="field">
+              <div class="slider-label">
+                <span>Batting Rating</span>
+                <span class="slider-val" id="val-batting">50</span>
+              </div>
+              <input type="range" id="f-batting" min="0" max="100" value="50" />
+            </div>
+
+            <div class="field">
+              <div class="slider-label">
+                <span>Bowling Rating</span>
+                <span class="slider-val" id="val-bowling">50</span>
+              </div>
+              <input type="range" id="f-bowling" min="0" max="100" value="50" />
+            </div>
+
+            <div class="field">
+              <div class="slider-label">
+                <span>Fielding Rating</span>
+                <span class="slider-val" id="val-fielding">50</span>
+              </div>
+              <input
+                type="range"
+                id="f-fielding"
+                min="0"
+                max="100"
+                value="50"
+              />
+            </div>
+
+            <div class="field">
+              <div class="slider-label">
+                <span>Wicket-Keeping</span>
+                <span class="slider-val" id="val-wk">50</span>
+              </div>
+              <input type="range" id="f-wk" min="0" max="100" value="50" />
+            </div>
+          </div>
+
+          <div class="modal-footer">
+            <button class="btn btn-ghost" onclick="closePlayerModal()">
+              Cancel
+            </button>
+            <button
+              class="btn btn-primary"
+              id="save-player-btn"
+              onclick="savePlayer()"
+            >
+              Save Player
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+    <!-- /#overlay-player -->
+
+    <!-- ═══════════════════════════════════════════════════
+     CONFIRM DIALOG
+════════════════════════════════════════════════════ -->
+    <div class="confirm-overlay">
+      <div class="confirm-box">
+        <div class="confirm-icon">⚠️</div>
+        <div class="confirm-title" id="confirm-title">Are you sure?</div>
+        <div class="confirm-msg" id="confirm-msg">
+          This action cannot be undone.
+        </div>
+        <div class="confirm-actions">
+          <button class="btn btn-ghost" onclick="closeConfirm()">Cancel</button>
+          <button class="btn btn-danger" id="confirm-yes">Confirm</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- ═══════════════════════════════════════════════════
+     TOAST CONTAINER
+════════════════════════════════════════════════════ -->
+    <div class="toast-container" id="toast-container"></div>
+
+    <script src="app.js"></script>
+  </body>
+</html>

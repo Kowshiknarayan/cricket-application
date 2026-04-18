@@ -1,0 +1,28 @@
+# Node (frontend)
+node_modules/
+dist/
+build/
+
+# Python (backend)
+__pycache__/
+*.pyc
+*.pyo
+venv/
+.venv/
+
+# Environment variables
+.env
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+
+# Docker
+*.tar
+
+# Editor
+.vscode/
+.idea/
